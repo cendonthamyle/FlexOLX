@@ -59,6 +59,8 @@ public class Usuario implements Serializable {
 
     /**
      * A senha nunca é armazenada em texto puro.
+     * 
+     * Para simplificação acadêmica foi utilizado SHA-256.
      * Apenas o hash gerado com SHA-256 + Salt é persistido.
      */
     private String senhaHash;
