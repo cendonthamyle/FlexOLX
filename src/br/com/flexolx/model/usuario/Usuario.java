@@ -258,40 +258,51 @@ public class Usuario implements Serializable {
     }
 
     /**
-     * Remove um perfil do usuário.
+     * Remove um perfil do usuário após validar sua existência e dependências.
      *
-     * A remoção somente é permitida quando:
-     * <ul>
-     *     <li>o usuário possuir mais de um perfil;</li>
-     *     <li>o perfil informado existir;</li>
-     *     <li>não houver dependências que impeçam sua remoção.</li>
-     * </ul>
-     *
-     * A verificação de dependências é delegada para uma implementação de
-     * {@link ValidadorDependenciaPerfil}, mantendo esta classe desacoplada
-     * das regras específicas de negócio.
+     * A remoção só é permitida quando o usuário possui mais de um perfil.
+     * Antes de remover, um validador obrigatório verifica se há vínculos que
+     * impedem a operação, como imóveis, anúncios ou negociações associados ao
+     * perfil.
      *
      * @param tipo tipo do perfil que será removido.
-     * @param validador componente responsável por verificar dependências
-     * antes da remoção. Pode ser {@code null}.
+     * @param validador componente obrigatório que verifica dependências antes
+     *                  da remoção.
      *
-     * @throws IllegalArgumentException caso o usuário não possua o perfil
-     * informado.
-     *
-     * @throws IllegalStateException caso o usuário fique sem perfis ou
-     * existam dependências que impeçam a remoção.
+     * @throws IllegalArgumentException caso o tipo seja nulo, o validador seja
+     *                                  nulo ou o usuário não possua o perfil.
+     * @throws IllegalStateException caso a remoção deixe o usuário sem perfis
+     *                               ou existam dependências vinculadas.
      */
-    public synchronized void removerPerfil(TipoUsuario tipo, ValidadorDependenciaPerfil validador) {
-        if (perfis.size() <= 1) {
-            throw new IllegalStateException("O usuário deve manter pelo menos um perfil ativo.");
-        }
-        if (!possuiPerfil(tipo)) {
-            throw new IllegalArgumentException("O usuário não possui o perfil do tipo: " + tipo);
+    public synchronized void removerPerfil(
+            TipoUsuario tipo,
+            ValidadorDependenciaPerfil validador
+        ) {
+        if (tipo == null) {
+            throw new IllegalArgumentException(
+                   "O tipo de perfil é obrigatório."
+            );
         }
 
-        if (validador != null) {
-            validador.verificarDependencias(this.id, tipo);
+        if (validador == null) {
+            throw new IllegalArgumentException(
+                    "Um validador de dependências é obrigatório."
+            );
         }
+
+        if (perfis.size() <= 1) {
+            throw new IllegalStateException(
+                    "O usuário deve manter pelo menos um perfil ativo."
+            );
+        }
+
+        if (!possuiPerfil(tipo)) {
+            throw new IllegalArgumentException(
+                    "O usuário não possui o perfil do tipo: " + tipo
+            );
+        }
+
+        validador.verificarDependencias(this.id, tipo);
 
         perfis.removeIf(p -> p.getTipo() == tipo);
     }
