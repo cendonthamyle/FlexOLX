@@ -27,12 +27,14 @@ import java.util.stream.Collectors;
 /**
  * Representa um usuário do sistema.
  *
- * Responsabilidades:
- * - Armazenar os dados básicos do usuário;
- * - Gerenciar autenticação por senha;
- * - Gerenciar os perfis associados ao usuário;
- * - Garantir validações de integridade;
- * - Proteger operações críticas contra acesso concorrente.
+ * É responsável por armazenar os dados cadastrais do usuário,
+ * gerenciar sua autenticação, controlar os perfis associados e
+ * garantir a integridade das informações por meio de validações.
+ *
+ * A senha do usuário é armazenada exclusivamente na forma de hash
+ * utilizando o algoritmo SHA-256 combinado com um salt exclusivo
+ * para cada instância, aumentando a segurança contra ataques de
+ * pré-computação.
  */
 public class Usuario implements Serializable {
     /**
@@ -45,7 +47,7 @@ public class Usuario implements Serializable {
 
     /**
      * Expressão regular utilizada para validar o formato do e-mail.
-     * Não verifica se o e-mail existe, apenas sua estrutura.
+     * Não verifica se o e-mail existe, apenas sua estrutura sintática.
      */
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
         "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
@@ -66,32 +68,41 @@ public class Usuario implements Serializable {
     private String senhaHash;
     
     /**
-     * Salt exclusivo para este usuário.
+     * Salt exclusivo utilizado na geração do hash da senha.
      *
-     * O Salt protege contra ataques de Rainbow Tables.
-     * Mesmo que dois usuários utilizem a mesma senha,
-     * os hashes finais serão diferentes.
+     * O uso de um salt garante que senhas iguais produzam hashes
+     * diferentes, reduzindo a vulnerabilidade a ataques do tipo
+     * Rainbow Table.
      */
-
     private final String salt; 
 
     private String telefone;
 
     /**
-     * Lista de perfis do usuário.
+     * Lista de perfis associados ao usuário.
      *
-     * Foi utilizada CopyOnWriteArrayList para evitar
-     * ConcurrentModificationException durante iterações
-     * simultâneas em ambientes concorrentes.
+     * Foi utilizada a implementação {@code CopyOnWriteArrayList} para
+     * evitar {@code ConcurrentModificationException} durante iterações
+     * concorrentes e proporcionar maior segurança em ambientes
+     * multi-thread.
      */
     private final List<PerfilUsuario> perfis = new CopyOnWriteArrayList<>();
 
     /**
-     * Construtor responsável por validar todos os dados recebidos
-     * antes da criação do usuário.
+     * Cria um novo usuário após validar todos os dados informados.
      *
-     * Caso qualquer informação seja inválida,
-     * nenhuma instância é criada.
+     * Caso alguma informação seja inválida, nenhuma instância será
+     * criada e uma exceção será lançada contendo todas as
+     * inconsistências encontradas durante a validação.
+     *
+     * @param nome nome do usuário.
+     * @param email endereço de e-mail do usuário.
+     * @param senha senha em texto puro utilizada para gerar o hash.
+     * @param telefone telefone do usuário.
+     * @param perfilInicial perfil inicial obrigatório do usuário.
+     *
+     * @throws IllegalArgumentException caso algum dos dados informados
+     * seja inválido.
      */
     public Usuario(String nome, String email, String senha, String telefone, PerfilUsuario perfilInicial) {
         ResultadoValidacao resultado = new ResultadoValidacao();
@@ -133,11 +144,16 @@ public class Usuario implements Serializable {
     }
 
     /**
-     * Realiza autenticação comparando:
-     * - e-mail informado
-     * - hash da senha informada
+     * Verifica se as credenciais informadas pertencem ao usuário.
      *
-     * A senha digitada nunca é comparada diretamente.
+     * A autenticação é realizada comparando o e-mail informado com o
+     * endereço cadastrado e o hash da senha fornecida com o hash
+     * armazenado para o usuário.
+     *
+     * @param emailTentativa e-mail informado para autenticação.
+     * @param senhaTentativa senha informada para autenticação.
+     * @return {@code true} caso as credenciais sejam válidas;
+     * {@code false} caso contrário.
      */
     public boolean autenticar(String emailTentativa, String senhaTentativa) {
         if (emailTentativa == null || senhaTentativa == null) return false;
@@ -148,8 +164,16 @@ public class Usuario implements Serializable {
     /**
      * Altera a senha do usuário.
      *
-     * synchronized garante que duas alterações simultâneas
-     * não ocorram ao mesmo tempo.
+     * A alteração somente é realizada caso a senha atual esteja correta
+     * e a nova senha atenda aos critérios mínimos de validação.
+     *
+     * Este método é sincronizado para evitar alterações concorrentes
+     * no estado do objeto.
+     *
+     * @param senhaAntiga senha atualmente cadastrada.
+     * @param novaSenha nova senha do usuário.
+     * @throws IllegalArgumentException caso a senha atual esteja
+     * incorreta ou a nova senha seja inválida.
      */
     public synchronized void alterarSenha(String senhaAntiga, String novaSenha) {
         if (!autenticar(this.email, senhaAntiga)) {
@@ -162,9 +186,13 @@ public class Usuario implements Serializable {
     }
 
     /**
-     * Gera um Salt aleatório de 16 bytes.
+     * Gera um salt criptograficamente seguro.
      *
-     * O SecureRandom produz valores criptograficamente seguros.
+     * Cada usuário recebe um salt exclusivo, utilizado durante a geração
+     * do hash da senha para reduzir a vulnerabilidade a ataques de
+     * pré-computação.
+     *
+     * @return salt codificado em Base64.
      */
     private String gerarSalt() {
         SecureRandom random = new SecureRandom();
@@ -174,10 +202,16 @@ public class Usuario implements Serializable {
     }
 
     /**
-     * Gera o hash SHA-256 da senha concatenada com o Salt.
+     * Gera o hash da senha utilizando o algoritmo SHA-256.
      *
-     * Fluxo:
-     * senha -> senha + salt -> SHA-256 -> Base64
+     * O hash é calculado a partir da concatenação da senha em texto puro
+     * com o salt do usuário.
+     *
+     * @param senhaLimpa senha em texto puro.
+     * @param saltUsuario salt utilizado na geração do hash.
+     * @return hash da senha codificado em Base64.
+     * @throws IllegalStateException caso o algoritmo SHA-256 não esteja
+     * disponível na plataforma de execução.
      */
     private String gerarHashSenha(String senhaLimpa, String saltUsuario) {
         try {
@@ -193,10 +227,16 @@ public class Usuario implements Serializable {
     /**
      * Adiciona um novo perfil ao usuário.
      *
-     * Regras:
-     * - não aceita perfil nulo;
-     * - não permite perfis duplicados;
-     * - valida o perfil antes da inserção.
+     * Antes da inclusão, o perfil é validado e verificado para garantir
+     * que ainda não exista outro perfil do mesmo tipo associado ao usuário 
+     * ou que seja nulo.
+     *
+     * Este método é sincronizado para impedir modificações concorrentes
+     * na coleção de perfis.
+     *
+     * @param novoPerfil perfil que será adicionado ao usuário.
+     * @throws IllegalArgumentException caso o perfil seja nulo, inválido
+     * ou já exista um perfil do mesmo tipo.
      */
     public synchronized void adicionarPerfil(PerfilUsuario novoPerfil) {
         if (novoPerfil == null) throw new IllegalArgumentException("Perfil não pode ser nulo.");
@@ -218,14 +258,26 @@ public class Usuario implements Serializable {
     /**
      * Remove um perfil do usuário.
      *
-     * Regras:
-     * - sempre deve existir pelo menos um perfil;
-     * - o perfil deve existir;
-     * - dependências externas são verificadas antes da remoção.
+     * A remoção somente é permitida quando:
+     * <ul>
+     *     <li>o usuário possuir mais de um perfil;</li>
+     *     <li>o perfil informado existir;</li>
+     *     <li>não houver dependências que impeçam sua remoção.</li>
+     * </ul>
      *
-     * A validação de dependências não é responsabilidade da classe Usuario.
-     * Ela é delegada para outra camada através de uma interface,
-     * reduzindo acoplamento e facilitando manutenção e testes.
+     * A verificação de dependências é delegada para uma implementação de
+     * {@link ValidadorDependenciaPerfil}, mantendo esta classe desacoplada
+     * das regras específicas de negócio.
+     *
+     * @param tipo tipo do perfil que será removido.
+     * @param validador componente responsável por verificar dependências
+     * antes da remoção. Pode ser {@code null}.
+     *
+     * @throws IllegalArgumentException caso o usuário não possua o perfil
+     * informado.
+     *
+     * @throws IllegalStateException caso o usuário fique sem perfis ou
+     * existam dependências que impeçam a remoção.
      */
     public synchronized void removerPerfil(TipoUsuario tipo, ValidadorDependenciaPerfil validador) {
         if (perfis.size() <= 1) {
@@ -243,7 +295,11 @@ public class Usuario implements Serializable {
     }
 
     /**
-     * Verifica se o usuário possui determinado perfil.
+     * Verifica se o usuário possui um perfil de determinado tipo.
+     *
+     * @param tipo tipo do perfil a ser consultado.
+     * @return {@code true} se o usuário possuir o perfil informado;
+     * {@code false} caso contrário.
      */
     public boolean possuiPerfil(TipoUsuario tipo) {
         return perfis.stream().anyMatch(p -> p.getTipo() == tipo);
@@ -252,10 +308,12 @@ public class Usuario implements Serializable {
     public String getId() { return id; }
     
     /**
-     * Retorna uma cópia da lista de perfis.
+     * Retorna uma cópia da lista de perfis associados ao usuário.
      *
-     * Isso impede que outras classes alterem diretamente
-     * a coleção interna da classe.
+     * Uma cópia defensiva é retornada para impedir que outras classes
+     * modifiquem diretamente a coleção interna.
+     *
+     * @return lista contendo os perfis do usuário.
      */
     public List<PerfilUsuario> getPerfis() { return new ArrayList<>(perfis); }
 
@@ -284,6 +342,16 @@ public class Usuario implements Serializable {
         this.telefone = apenasNumeros;
     }
 
+    /**
+     * Compara este usuário com outro objeto.
+     *
+     * Dois usuários são considerados iguais quando possuem o mesmo
+     * identificador único.
+     *
+     * @param o objeto a ser comparado.
+     * @return {@code true} se ambos representam o mesmo usuário;
+     * {@code false} caso contrário.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

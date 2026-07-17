@@ -4,20 +4,23 @@ package br.com.flexolx.model.usuario;
  * Foi utilizado um enum para representar os tipos de usuário
  * porque o conjunto de perfis é fixo e conhecido pelo sistema.
  *
- * Dessa forma evitamos o uso de Strings espalhadas pelo código,
- * reduzimos erros de digitação e aumentamos a segurança de tipo
- * (type safety), permitindo que o compilador valide os valores.
+ * Dessa forma, evita-se o uso de Strings espalhadas pelo código,
+ * reduzindo erros de digitação e aumentando a segurança de tipo
+ * (type safety), já que o compilador valida os valores possíveis.
  */
 
 /**
- * Enumeração que representa todos os tipos de perfis
- * disponíveis no sistema.
+ * Representa os tipos de perfis de usuário disponíveis no sistema.
  *
- * Um usuário pode possuir um ou mais perfis simultaneamente,
- * permitindo diferentes permissões e funcionalidades.
+ * Cada constante identifica um perfil com permissões e responsabilidades
+ * específicas dentro da aplicação.
  *
- * Exemplo:
- * Um usuário pode ser CLIENTE e PROPRIETARIO_DIRETO ao mesmo tempo.
+ * Um mesmo usuário pode possuir mais de um perfil simultaneamente,
+ * permitindo o acesso a diferentes funcionalidades conforme as regras
+ * de negócio.
+ *
+ * <p>Exemplo: um usuário pode possuir os perfis
+ * {@link #CLIENTE} e {@link #PROPRIETARIO_DIRETO} ao mesmo tempo.</p>
  */
 public enum TipoUsuario {
     /**
