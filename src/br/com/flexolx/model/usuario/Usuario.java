@@ -335,9 +335,6 @@ public class Usuario implements Serializable {
     public synchronized String getNome() { return nome; }
     public synchronized String getEmail() { return email; }
     public synchronized String getTelefone() { return telefone; }
-    public String getSalt() { return salt; }
-    public String getSenhaHash() { return senhaHash; }
-
     public synchronized void setNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) throw new IllegalArgumentException("Nome inválido.");
         this.nome = nome.trim();
