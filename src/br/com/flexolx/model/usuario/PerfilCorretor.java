@@ -33,9 +33,20 @@ public class PerfilCorretor implements PerfilUsuario {
     }
 
     public String getCreci() { return creci; }
+
+    /**
+     * Atualiza o registro CRECI do corretor.
+     *
+     * Espaços nas extremidades são removidos antes do armazenamento.
+     *
+     * @param creci novo registro CRECI.
+     * @throws IllegalArgumentException caso o registro seja nulo ou vazio.
+     */
     public void setCreci(String creci) {
-        if (creci == null) {
-            throw new IllegalArgumentException("O registro CRECI não pode ser nulo.");
+        if (creci == null || creci.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "O registro CRECI é obrigatório."
+            );
         }
 
         this.creci = creci.trim();

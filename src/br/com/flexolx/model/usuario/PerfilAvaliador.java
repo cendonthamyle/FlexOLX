@@ -40,13 +40,31 @@ public class PerfilAvaliador implements PerfilUsuario {
     public String getCnai() { return cnai; }
     
     /**
-     * Atualiza o número de registro no CNAI.
+     * Atualiza o registro CNAI do avaliador.
      *
-     * Apenas os caracteres numéricos são armazenados.
+     * Apenas dígitos são armazenados. O registro não pode ser nulo
+     * nem ficar vazio após a normalização.
      *
-     * @param cnai novo registro do avaliador.
+     * @param cnai novo registro CNAI.
+     * @throws IllegalArgumentException caso o registro seja nulo ou vazio.
      */
-    public void setCnai(String cnai) { this.cnai = cnai.replaceAll("\\D", ""); }
+    public void setCnai(String cnai) {
+        if (cnai == null) {
+            throw new IllegalArgumentException(
+                    "O registro CNAI não pode ser nulo."
+            );
+        }
+
+        String cnaiNormalizado = cnai.replaceAll("\\D", "");
+
+        if (cnaiNormalizado.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "O registro CNAI é obrigatório."
+            );
+        }
+
+        this.cnai = cnaiNormalizado;
+    }
 
     @Override
     public String toString() {

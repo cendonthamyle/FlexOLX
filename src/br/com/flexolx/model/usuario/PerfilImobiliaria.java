@@ -74,8 +74,32 @@ public class PerfilImobiliaria implements PerfilUsuario {
     }
 
     public String getCnpj() { return cnpj; }
-    public void setCnpj(String cnpj) { this.cnpj = cnpj.replaceAll("\\D", ""); }
 
+    /**
+     * Atualiza o CNPJ da imobiliária.
+     *
+     * Apenas dígitos são armazenados e o número precisa atender à
+     * validação dos dígitos verificadores do CNPJ.
+     *
+     * @param cnpj novo CNPJ da imobiliária.
+     * @throws IllegalArgumentException caso o CNPJ seja nulo ou inválido.
+     */
+    public void setCnpj(String cnpj) {
+        if (cnpj == null) {
+            throw new IllegalArgumentException(
+                    "O CNPJ não pode ser nulo."
+            );
+        }
+
+        String cnpjNormalizado = cnpj.replaceAll("\\D", "");
+
+        if (!validarCNPJ(cnpjNormalizado)) {
+            throw new IllegalArgumentException("CNPJ inválido.");
+        }
+
+        this.cnpj = cnpjNormalizado;
+    }
+    
     @Override
     public String toString() { return "CNPJ: " + cnpj; }
 }
