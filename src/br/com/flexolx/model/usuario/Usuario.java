@@ -81,15 +81,17 @@ public class Usuario implements Serializable {
     private String telefone;
 
     /**
-     * Lista de perfis associados ao usuário.
+     * Perfis associados ao usuário.
      *
-     * Foi utilizada a implementação {@code CopyOnWriteArrayList} para
-     * evitar {@code ConcurrentModificationException} durante iterações
-     * concorrentes e proporcionar maior segurança em ambientes
-     * multi-thread.
+     * O campo é declarado como {@code CopyOnWriteArrayList}, e não como
+     * {@code List}, pois a implementação é serializável. Assim, a
+     * serialização de {@code Usuario} preserva a coleção de perfis sem
+     * gerar avisos do compilador. A estrutura também evita
+     * {@code ConcurrentModificationException} durante iterações
+     * concorrentes.
      */
-    private final List<PerfilUsuario> perfis = new CopyOnWriteArrayList<>();
-
+    private final CopyOnWriteArrayList<PerfilUsuario> perfis = new CopyOnWriteArrayList<>();
+    
     /**
      * Cria um novo usuário após validar todos os dados informados.
      *

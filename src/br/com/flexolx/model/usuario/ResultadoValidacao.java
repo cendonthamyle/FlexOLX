@@ -19,11 +19,15 @@ public class ResultadoValidacao implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /**
-     * Lista que armazena todas as mensagens de erro encontradas
-     * durante o processo de validação.
+     * Mensagens de erro encontradas durante a validação.
+     *
+     * O campo é declarado como {@code ArrayList}, que é serializável,
+     * para que a serialização de {@code ResultadoValidacao} também inclua
+     * as mensagens sem gerar avisos do compilador. A API pública continua
+     * expondo os dados pelo tipo {@code List}.
      */
-    private final List<String> erros = new ArrayList<>();
-
+    private final ArrayList<String> erros = new ArrayList<>();
+    
     /**
      * Adiciona uma nova mensagem de erro ao resultado da validação.
      *
