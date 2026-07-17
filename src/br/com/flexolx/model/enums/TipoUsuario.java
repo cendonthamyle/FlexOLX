@@ -1,4 +1,4 @@
-package br.com.flexolx.model.usuario;
+package br.com.flexolx.model.enums;
 
 /*
  * Foi utilizado um enum para representar os tipos de usuário
