@@ -1,6 +1,7 @@
 package br.com.flexolx.model.usuario;
 
 import java.io.Serializable;
+import br.com.flexolx.model.enums.TipoUsuario;
 
 /**
  * Define o contrato para os perfis de usuário do sistema.

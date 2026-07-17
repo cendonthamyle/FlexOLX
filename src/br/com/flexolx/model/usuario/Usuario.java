@@ -24,6 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import br.com.flexolx.model.enums.TipoUsuario;
+
 /**
  * Representa um usuário do sistema.
  *

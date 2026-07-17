@@ -1,5 +1,7 @@
 package br.com.flexolx.model.usuario;
 
+import br.com.flexolx.model.enums.TipoUsuario;
+
 /**
  * Interface responsável por validar se um perfil de usuário pode ser removido.
  *

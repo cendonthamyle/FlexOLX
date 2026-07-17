@@ -1,5 +1,7 @@
 package br.com.flexolx.model.usuario;
 
+import br.com.flexolx.model.enums.TipoUsuario;
+
 /**
  * Representa o perfil de um cliente da plataforma.
  *
