@@ -22,6 +22,8 @@ public class PerfilAvaliador implements PerfilUsuario {
 
     public PerfilAvaliador(String cnai) {
         this.cnai = cnai != null ? cnai.replaceAll("\\D", "") : "";
+        // este operador ternário troca todos os caractéres diferentes
+        // de numeros em espaços vazios por meio da função .replaceAll.
     }
 
     @Override
