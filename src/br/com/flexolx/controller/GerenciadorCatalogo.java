@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * </p>
  *
  * @author Luca Borges
- * @version 1.0
+ * @version 1.1
  */
 public class GerenciadorCatalogo {
     private List<Imovel> imoveis;
@@ -112,6 +112,20 @@ public class GerenciadorCatalogo {
         }
         return l;
     }
+
+    /**
+     * Retorna a lista de todos os imóveis ativos cadastrados no catálogo.
+     * <p>
+     * O retorno é uma cópia da lista interna, garantindo que alterações
+     * feitas na lista devolvida não afetem o estado do catálogo.
+     * </p>
+     *
+     * @return lista com os imóveis ativos cadastrados.
+     */
+    public List<Imovel> listarAtivos(){
+        return filtrar(null, null, null, StatusAnuncio.ATIVO);
+    }
+
     private void validarImovel(Imovel imovel){
         if(imovel == null){
             throw new IllegalArgumentException("É obrigatório colocar um imovel");

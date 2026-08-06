@@ -23,7 +23,7 @@ public class GerenciadorUsuarios {
      * primeira execução).
      */
     public GerenciadorUsuarios(){
-        this.gerenciadorArquivos = new GerenciadorArquivos<>("usuario.dat");
+        this.gerenciadorArquivos = new GerenciadorArquivos<>("usuarios.dat");
         this.usuarios = gerenciadorArquivos.carregar();
     }
 
