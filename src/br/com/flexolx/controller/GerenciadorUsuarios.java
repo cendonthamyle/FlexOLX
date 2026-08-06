@@ -11,7 +11,7 @@ import br.com.flexolx.model.usuario.Usuario;
  * </p>
  *
  * @author Luca Borges
- * @version 1.0
+ * @version 1.1
  */
 public class GerenciadorUsuarios {
     private List<Usuario> usuarios = new ArrayList<>();
@@ -86,6 +86,22 @@ public class GerenciadorUsuarios {
     }
 
     /**
+     * Verifica se o usuário tem as informações de login corretas.
+     *
+     * @param email e-mail de login do usuário.
+     * @param senha senha do usuário.
+     * @return o usuário autenticado, caso as credenciais estejam corretas.
+     * @throws AutenticacaoException caso o e-mail ou a senha estejam incorretos.
+     */
+    public Usuario login(String email, String senha) {
+        Usuario usuario = buscarPorEmail(email);
+        if (usuario == null || !usuario.autenticar(email, senha)) {
+            throw new AutenticacaoException("Email ou senha inválidos");
+        }
+        return usuario;
+    }
+
+    /**
      * Retorna a lista completa de Usuários cadastrados no catálogo.
      * <p>
      * O retorno é uma cópia da lista interna, garantindo que alterações
@@ -104,6 +120,9 @@ public class GerenciadorUsuarios {
     private void validarUsuario(Usuario usuario){
         if(usuario == null){
             throw new IllegalArgumentException("É obrigatório colocar um Usuário");
+        }
+        if(buscarPorEmail(usuario.getEmail()) != null){
+            throw new IllegalArgumentException("Já existe um usuário com esse email"); 
         }
     }
 }
