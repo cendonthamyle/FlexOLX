@@ -1,0 +1,571 @@
+@startuml
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+hide circle
+skinparam linetype ortho
+left to right direction
+
+package "br.com.flexolx.controller" {
+  class AutenticacaoException {
+    +AutenticacaoException(mensagem: String)
+  }
+
+  class GerenciadorArquivos {
+    -caminhoArquivo: String
+    --
+    +GerenciadorArquivos(caminhoArquivo: String)
+    +salvar(lista: List<T>): void
+    +carregar(): List<T>
+  }
+
+  class GerenciadorCatalogo {
+    -imoveis: List<Imovel>
+    -gerenciadorArquivos: GerenciadorArquivos<Imovel>
+    --
+    +GerenciadorCatalogo()
+    +adicionar(imovel: Imovel): void
+    +remover(imovel: Imovel): void
+    +filtrar(endereco: String, tipo: TipoImovel, precoMax: BigDecimal, status: StatusAnuncio): List<Imovel>
+    +buscarPorId(id: UUID): Imovel
+    +listarTodos(): List<Imovel>
+    +listarAtivos(): List<Imovel>
+    -validarImovel(imovel: Imovel): void
+  }
+
+  class GerenciadorPropostas {
+    -listaPropostas: List<Proposta>
+    --
+    +GerenciadorPropostas()
+    +enviarProposta(p: Proposta): void
+    +listarPropostasRecebidas(anunciante: Usuario): List<Proposta>
+    +listarPropostasEnviadas(comprador: Usuario): List<Proposta>
+    +buscarPorId(id: UUID): Proposta
+    +aceitarProposta(id: UUID, anunciante: Usuario): boolean
+    +recusarProposta(id: UUID, anunciante: Usuario, motivo: String): boolean
+  }
+
+  class GerenciadorUsuarios {
+    -usuarios: List<Usuario> = new ArrayList<>()
+    -gerenciadorArquivos: GerenciadorArquivos<Usuario>
+    --
+    +GerenciadorUsuarios()
+    +adicionar(usuario: Usuario): void
+    +remover(usuario: Usuario): void
+    +buscarPorEmail(email: String): Usuario
+    +buscarPorId(id: String): Usuario
+    +login(email: String, senha: String): Usuario
+    +listarTodos(): List<Usuario>
+    -validarUsuario(usuario: Usuario): void
+  }
+
+  class PersistenciaException {
+    +PersistenciaException(mensagem: String, causa: Throwable)
+  }
+
+}
+
+package "br.com.flexolx.model.imovel" {
+  abstract class Imovel {
+    -{static} serialVersionUID: long = 2L
+    -areaTotal: double
+    -quantidadeQuartos: int
+    -endereco: String
+    -tipoImovel: TipoImovel
+    -statusAvaliacao: StatusAvaliacao
+    -statusConservacao: StatusImovel
+    --
+    #Imovel(titulo: String, descricao: String, preco: BigDecimal, vendedor: Usuario, areaTotal: double, quantidadeQuartos: int, endereco: String, tipoImovel: TipoImovel)
+    +getAreaTotal(): double
+    +getQuantidadeQuartos(): int
+    +getEndereco(): String
+    +getTipoImovel(): TipoImovel
+    +getStatusAvaliacao(): StatusAvaliacao
+    +getStatusConservacao(): StatusImovel
+    +aprovarAvaliacao(avaliador: Usuario): void
+    +reprovarAvaliacao(avaliador: Usuario): void
+    +iniciarReforma(solicitante: Usuario): void
+    +concluirReforma(solicitante: Usuario): void
+    +alterarInformacoes(solicitante: Usuario, titulo: String, descricao: String, preco: BigDecimal, areaTotal: double, quantidadeQuartos: int, endereco: String): void
+    +reservar(interessado: Usuario): void
+    +cancelarReserva(solicitante: Usuario): void
+    +confirmarVenda(solicitante: Usuario, comprador: Usuario): void
+    +marcarComoAlugado(solicitante: Usuario): void
+    #validarParaPublicacao(): void
+    -pausarAnuncioSeAtivo(solicitante: Usuario): void
+    -validarProprietarioDoImovel(solicitante: Usuario): void
+    -validarAvaliador(avaliador: Usuario): void
+    -{static} validarArea(area: double): void
+    -{static} validarQuartos(quartos: int): void
+    -{static} validarEndereco(endereco: String): void
+  }
+
+  class Apartamento {
+    -{static} serialVersionUID: long = 1L
+    -andar: int
+    -quantidadeBanheiros: int
+    -vagasGaragem: int
+    -possuiElevador: boolean
+    -valorCondominio: BigDecimal
+    --
+    +Apartamento(titulo: String, descricao: String, preco: BigDecimal, vendedor: Usuario, areaTotal: double, quantidadeQuartos: int, endereco: String, andar: int, quantidadeBanheiros: int, vagasGaragem: int, possuiElevador: boolean, valorCondominio: BigDecimal)
+    +getAndar(): int
+    +getQuantidadeBanheiros(): int
+    +getVagasGaragem(): int
+    +isPossuiElevador(): boolean
+    +getValorCondominio(): BigDecimal
+  }
+
+  class Casa {
+    -{static} serialVersionUID: long = 1L
+    -quantidadeBanheiros: int
+    -vagasGaragem: int
+    -possuiQuintal: boolean
+    --
+    +Casa(titulo: String, descricao: String, preco: BigDecimal, vendedor: Usuario, areaTotal: double, quantidadeQuartos: int, endereco: String, quantidadeBanheiros: int, vagasGaragem: int, possuiQuintal: boolean)
+    +getQuantidadeBanheiros(): int
+    +getVagasGaragem(): int
+    +isPossuiQuintal(): boolean
+    -{static} validarNaoNegativo(valor: int, campo: String): void
+  }
+
+  class Kitnet {
+    -{static} serialVersionUID: long = 1L
+    -quantidadeBanheiros: int
+    -mobiliada: boolean
+    --
+    +Kitnet(titulo: String, descricao: String, preco: BigDecimal, vendedor: Usuario, areaTotal: double, endereco: String, quantidadeBanheiros: int, mobiliada: boolean)
+    +alterarInformacoes(solicitante: Usuario, titulo: String, descricao: String, preco: BigDecimal, areaTotal: double, quantidadeQuartos: int, endereco: String): void
+    +getQuantidadeBanheiros(): int
+    +isMobiliada(): boolean
+  }
+
+  class Terreno {
+    -{static} serialVersionUID: long = 1L
+    -largura: double
+    -comprimento: double
+    -plano: boolean
+    --
+    +Terreno(titulo: String, descricao: String, preco: BigDecimal, vendedor: Usuario, endereco: String, largura: double, comprimento: double, plano: boolean)
+    +alterarInformacoes(solicitante: Usuario, titulo: String, descricao: String, preco: BigDecimal, areaTotal: double, quantidadeQuartos: int, endereco: String): void
+    +getLargura(): double
+    +getComprimento(): double
+    +isPlano(): boolean
+    -{static} calcularArea(largura: double, comprimento: double): double
+    -{static} validarMedida(medida: double, campo: String): double
+  }
+
+}
+
+package "br.com.flexolx.model.item" {
+  abstract class Item {
+    -{static} serialVersionUID: long = 3L
+    -{static} TAMANHO_MAXIMO_TITULO: int = 150
+    -{static} TAMANHO_MAXIMO_DESCRICAO: int = 5_000
+    -id: UUID
+    -titulo: String
+    -descricao: String
+    -preco: BigDecimal
+    -vendedor: Usuario
+    -status: StatusAnuncio
+    -interessadoId: String
+    -compradorId: String
+    -motivoEncerramento: String
+    -criadoEm: Instant
+    -publicadoEm: Instant
+    -reservadoEm: Instant
+    -encerradoEm: Instant
+    -atualizadoEm: Instant
+    --
+    #Item(titulo: String, descricao: String, preco: BigDecimal, vendedor: Usuario)
+    +getId(): UUID
+    +getTitulo(): String
+    +getDescricao(): String
+    +getPreco(): BigDecimal
+    +getVendedor(): Usuario
+    +getStatus(): StatusAnuncio
+    +getInteressadoId(): String
+    +getCompradorId(): String
+    +getMotivoEncerramento(): String
+    +getCriadoEm(): Instant
+    +getPublicadoEm(): Instant
+    +getReservadoEm(): Instant
+    +getEncerradoEm(): Instant
+    +getAtualizadoEm(): Instant
+    +publicar(solicitante: Usuario): void
+    +pausar(solicitante: Usuario): void
+    +reativar(solicitante: Usuario): void
+    +reservar(interessado: Usuario): void
+    +cancelarReserva(solicitante: Usuario): void
+    +confirmarVenda(solicitante: Usuario, comprador: Usuario): void
+    +encerrar(solicitante: Usuario, motivo: String): void
+    #encerrarComoAlugado(solicitante: Usuario, motivo: String): void
+    -finalizarAnuncio(solicitante: Usuario, motivo: String, statusFinal: StatusAnuncio): void
+    +alterarDadosBasicos(solicitante: Usuario, titulo: String, descricao: String, preco: BigDecimal): void
+    #validarParaPublicacao(): void
+    -validarProprietario(solicitante: Usuario): void
+    -validarInteressado(interessado: Usuario): void
+    -{static} normalizarTexto(valor: String, campo: String, maximo: int): String
+    -{static} normalizarPreco(preco: BigDecimal): BigDecimal
+    -{static} validarVendedor(vendedor: Usuario): void
+    -validarVendedorAtual(): void
+    -exigirStatus(esperado: StatusAnuncio): void
+    #atualizarData(): void
+    +equals(obj: Object): boolean
+    +hashCode(): int
+    +toString(): String
+  }
+
+}
+
+package "br.com.flexolx.model.proposta" {
+  class Proposta {
+    -{static} serialVersionUID: long = 1L
+    -{static} TAMANHO_MAXIMO_MENSAGEM: int = 1_000
+    -{static} TAMANHO_MAXIMO_MOTIVO_RECUSA: int = 300
+    -id: UUID
+    -imovel: Imovel
+    -proponente: Usuario
+    -valorOfertado: BigDecimal
+    -valorContraproposta: BigDecimal
+    -valorAcordado: BigDecimal
+    -formaPagamento: FormaPagamento
+    -mensagem: String
+    -status: StatusProposta
+    -motivoRecusa: String
+    -criadaEm: LocalDateTime
+    -validadeEm: LocalDateTime
+    -respondidaEm: LocalDateTime
+    -canceladaEm: LocalDateTime
+    -concluidaEm: LocalDateTime
+    --
+    +Proposta(imovel: Imovel, proponente: Usuario, valorOfertado: BigDecimal, formaPagamento: FormaPagamento, mensagem: String, validadeEm: LocalDateTime)
+    +getId(): UUID
+    +getImovel(): Imovel
+    +getProponente(): Usuario
+    +getValorOfertado(): BigDecimal
+    +getValorContraproposta(): BigDecimal
+    +getValorAcordado(): BigDecimal
+    +getFormaPagamento(): FormaPagamento
+    +getMensagem(): String
+    +getStatus(): StatusProposta
+    +getMotivoRecusa(): String
+    +getCriadaEm(): LocalDateTime
+    +getValidadeEm(): LocalDateTime
+    +getRespondidaEm(): LocalDateTime
+    +getCanceladaEm(): LocalDateTime
+    +getConcluidaEm(): LocalDateTime
+    +aceitar(vendedor: Usuario): void
+    +enviarContraproposta(vendedor: Usuario, novoValor: BigDecimal): void
+    +aceitarContraproposta(solicitante: Usuario): void
+    +recusar(vendedor: Usuario, motivo: String): void
+    +recusarContraproposta(solicitante: Usuario): void
+    +cancelar(solicitante: Usuario): void
+    +encerrarPorIndisponibilidadeDoImovel(): void
+    +expirar(): void
+    +concluirVenda(vendedor: Usuario): void
+    -liberarReservaDaProposta(): void
+    -verificarValidade(): void
+    -validarVendedor(vendedor: Usuario): void
+    -validarProponente(solicitante: Usuario): void
+    -validarParticipante(solicitante: Usuario): void
+    -exigirStatus(statusEsperado: StatusProposta): void
+    -{static} validarImovel(imovel: Imovel): void
+    -{static} validarProponente(imovel: Imovel, proponente: Usuario): void
+    -{static} validarValor(valor: BigDecimal, campo: String): void
+    -{static} validarFormaPagamento(formaPagamento: FormaPagamento): void
+    -{static} validarValidade(validadeEm: LocalDateTime): void
+    -{static} normalizarValor(valor: BigDecimal): BigDecimal
+    -{static} normalizarMensagem(mensagem: String): String
+    -{static} normalizarMotivoRecusa(motivo: String): String
+    +equals(obj: Object): boolean
+    +hashCode(): int
+  }
+
+}
+
+package "br.com.flexolx.model.usuario" {
+  class Usuario {
+    -{static} serialVersionUID: long = 7L
+    -{static} EMAIL_PATTERN: Pattern = Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")
+    -id: String
+    -nome: String
+    -email: String
+    -senhaHash: String
+    -salt: String
+    -telefone: String
+    -perfis: CopyOnWriteArrayList<PerfilUsuario> = new CopyOnWriteArrayList<>()
+    --
+    +Usuario(nome: String, email: String, senha: String, telefone: String, perfilInicial: PerfilUsuario)
+    +autenticar(emailTentativa: String, senhaTentativa: String): boolean
+    +alterarSenha(senhaAntiga: String, novaSenha: String): void
+    -gerarSalt(): String
+    -gerarHashSenha(senhaLimpa: String, saltUsuario: String): String
+    +adicionarPerfil(novoPerfil: PerfilUsuario): void
+    +removerPerfil(tipo: TipoUsuario, validador: ValidadorDependenciaPerfil): void
+    +possuiPerfil(tipo: TipoUsuario): boolean
+    +getId(): String
+    +getPerfis(): List<PerfilUsuario>
+    +getNome(): String
+    +getEmail(): String
+    +getTelefone(): String
+    +setNome(nome: String): void
+    +setEmail(email: String): void
+    +setTelefone(telefone: String): void
+    +equals(o: Object): boolean
+    +hashCode(): int
+    +toString(): String
+  }
+
+  interface PerfilUsuario {
+    ~getTipo(): TipoUsuario
+    ~validar(resultado: ResultadoValidacao): void
+  }
+
+  class PerfilAdministrador {
+    -{static} serialVersionUID: long = 1L
+    --
+    +getTipo(): TipoUsuario
+    +validar(resultado: ResultadoValidacao): void
+    +toString(): String
+  }
+
+  class PerfilAvaliador {
+    -{static} serialVersionUID: long = 1L
+    -cnai: String
+    --
+    +PerfilAvaliador(cnai: String)
+    +getTipo(): TipoUsuario
+    +validar(resultado: ResultadoValidacao): void
+    +getCnai(): String
+    +setCnai(cnai: String): void
+    +toString(): String
+  }
+
+  class PerfilCliente {
+    -{static} serialVersionUID: long = 1L
+    --
+    +getTipo(): TipoUsuario
+    +validar(resultado: ResultadoValidacao): void
+    +toString(): String
+  }
+
+  class PerfilCorretor {
+    -{static} serialVersionUID: long = 1L
+    -creci: String
+    --
+    +PerfilCorretor(creci: String)
+    +getTipo(): TipoUsuario
+    +validar(resultado: ResultadoValidacao): void
+    +getCreci(): String
+    +setCreci(creci: String): void
+    +toString(): String
+  }
+
+  class PerfilImobiliaria {
+    -{static} serialVersionUID: long = 1L
+    -cnpj: String
+    --
+    +PerfilImobiliaria(cnpj: String)
+    +getTipo(): TipoUsuario
+    +validar(resultado: ResultadoValidacao): void
+    -validarCNPJ(cnpj: String): boolean
+    +getCnpj(): String
+    +setCnpj(cnpj: String): void
+    +toString(): String
+  }
+
+  class PerfilProprietarioDireto {
+    -{static} serialVersionUID: long = 1L
+    --
+    +getTipo(): TipoUsuario
+    +validar(resultado: ResultadoValidacao): void
+    +toString(): String
+  }
+
+  interface ValidadorDependenciaPerfil {
+    ~verificarDependencias(usuarioId: String, tipo: TipoUsuario): void
+  }
+
+  class ResultadoValidacao {
+    -{static} serialVersionUID: long = 1L
+    -erros: ArrayList<String> = new ArrayList<>()
+    --
+    +adicionarErro(erro: String): void
+    +ehValido(): boolean
+    +getErros(): List<String>
+  }
+
+}
+
+package "br.com.flexolx.view" {
+  class TelaCriarProposta {
+    -txtValor: JTextField
+    -txtMensagem: JTextArea
+    -comboFormaPagamento: JComboBox<FormaPagamento>
+    -btnEnviar: JButton
+    -gerenciador: GerenciadorPropostas
+    -comprador: Usuario
+    -imovel: Imovel
+    --
+    +TelaCriarProposta(parent: Frame, gerenciador: GerenciadorPropostas, comprador: Usuario, imovel: Imovel)
+    -enviar(): void
+  }
+
+  class TelaMinhasPropostas {
+    -gerenciador: GerenciadorPropostas
+    -usuarioLogado: Usuario
+    -tabela: JTable
+    -tableModel: DefaultTableModel
+    -btnAceitar: JButton
+    -btnRecusar: JButton
+    --
+    +TelaMinhasPropostas(gerenciador: GerenciadorPropostas, usuarioLogado: Usuario)
+    -inicializarComponentes(): void
+    -carregarPropostas(): void
+    -responderProposta(aceitar: boolean): void
+  }
+
+}
+
+package "br.com.flexolx.api" {
+  class RecursoNaoEncontradoException {
+    +RecursoNaoEncontradoException(mensagem: String)
+  }
+
+}
+
+package "br.com.flexolx.api.config" {
+  class CorsConfig {
+    +addCorsMappings(registry: CorsRegistry): void
+  }
+
+  class DataSeeder {
+    -{static} log: Logger = LoggerFactory.getLogger(DataSeeder.class)
+    -catalogo: GerenciadorCatalogo
+    -usuarios: GerenciadorUsuarios
+    --
+    +DataSeeder(catalogo: GerenciadorCatalogo, usuarios: GerenciadorUsuarios)
+    +run(args: String): void
+  }
+
+  class GerenciadoresConfig {
+    +gerenciadorCatalogo(): GerenciadorCatalogo
+    +gerenciadorUsuarios(): GerenciadorUsuarios
+    +gerenciadorPropostas(): GerenciadorPropostas
+  }
+
+}
+
+package "br.com.flexolx.api.controller" {
+  class AuthController {
+    -usuarios: GerenciadorUsuarios
+    --
+    +AuthController(usuarios: GerenciadorUsuarios)
+    +login(body: LoginRequest): UsuarioResponse
+    +register(body: RegisterRequest): ResponseEntity<UsuarioResponse>
+  }
+
+  class GlobalExceptionHandler {
+    -{static} log: Logger = LoggerFactory.getLogger(GlobalExceptionHandler.class)
+    --
+    +tratarAutenticacao(e: AutenticacaoException): ResponseEntity<ErroResponse>
+    +tratarNaoEncontrado(e: RecursoNaoEncontradoException): ResponseEntity<ErroResponse>
+    +tratarRequisicaoInvalida(e: RuntimeException): ResponseEntity<ErroResponse>
+    +tratarProibido(e: SecurityException): ResponseEntity<ErroResponse>
+    +tratarValidacao(e: MethodArgumentNotValidException): ResponseEntity<ErroResponse>
+    +tratarCorpoInvalido(e: HttpMessageNotReadableException): ResponseEntity<ErroResponse>
+    +tratarErroInesperado(e: Exception): ResponseEntity<ErroResponse>
+  }
+
+  class ImovelController {
+    -catalogo: GerenciadorCatalogo
+    --
+    +ImovelController(catalogo: GerenciadorCatalogo)
+    +listar(): List<ImovelResponse>
+    +buscarPorId(id: String): ResponseEntity<ImovelResponse>
+  }
+
+  class PropostaController {
+    -catalogo: GerenciadorCatalogo
+    -usuarios: GerenciadorUsuarios
+    -propostas: GerenciadorPropostas
+    --
+    +PropostaController(catalogo: GerenciadorCatalogo, usuarios: GerenciadorUsuarios, propostas: GerenciadorPropostas)
+    +listarPorUsuario(email: String): PropostasDoUsuarioResponse
+    +enviar(body: PropostaRequest): ResponseEntity<PropostaResponse>
+  }
+
+}
+
+package "br.com.flexolx.tools" {
+  class RemoverUsuarioTeste {
+    +{static} main(args: String[]): void
+  }
+
+  class VisualizarDados {
+    +{static} main(args: String[]): void
+  }
+
+}
+
+package "br.com.flexolx" {
+  class FlexolxApiApplication {
+    +{static} main(args: String[]): void
+  }
+
+}
+
+skinparam classAttributeIconSize 0
+hide circle
+GerenciadorCatalogo o-- Imovel
+GerenciadorCatalogo *-- GerenciadorArquivos
+GerenciadorPropostas o-- Proposta
+GerenciadorPropostas ..> Usuario
+GerenciadorUsuarios o-- Usuario
+GerenciadorUsuarios *-- GerenciadorArquivos
+Apartamento --|> Imovel
+Apartamento ..> Usuario
+Casa --|> Imovel
+Casa ..> Usuario
+Imovel --|> Item
+Imovel ..> Usuario
+Kitnet --|> Imovel
+Kitnet ..> Usuario
+Terreno --|> Imovel
+Terreno ..> Usuario
+Item *-- Usuario
+Proposta *-- Imovel
+Proposta *-- Usuario
+PerfilAdministrador ..|> PerfilUsuario
+PerfilAdministrador ..> ResultadoValidacao
+PerfilAvaliador ..|> PerfilUsuario
+PerfilAvaliador ..> ResultadoValidacao
+PerfilCliente ..|> PerfilUsuario
+PerfilCliente ..> ResultadoValidacao
+PerfilCorretor ..|> PerfilUsuario
+PerfilCorretor ..> ResultadoValidacao
+PerfilImobiliaria ..|> PerfilUsuario
+PerfilImobiliaria ..> ResultadoValidacao
+PerfilProprietarioDireto ..|> PerfilUsuario
+PerfilProprietarioDireto ..> ResultadoValidacao
+PerfilUsuario ..> ResultadoValidacao
+Usuario o-- PerfilUsuario
+Usuario ..> ValidadorDependenciaPerfil
+TelaCriarProposta *-- GerenciadorPropostas
+TelaCriarProposta *-- Usuario
+TelaCriarProposta *-- Imovel
+TelaMinhasPropostas *-- GerenciadorPropostas
+TelaMinhasPropostas *-- Usuario
+DataSeeder *-- GerenciadorCatalogo
+DataSeeder *-- GerenciadorUsuarios
+GerenciadoresConfig ..> GerenciadorCatalogo
+GerenciadoresConfig ..> GerenciadorUsuarios
+GerenciadoresConfig ..> GerenciadorPropostas
+AuthController *-- GerenciadorUsuarios
+GlobalExceptionHandler ..> AutenticacaoException
+GlobalExceptionHandler ..> RecursoNaoEncontradoException
+ImovelController *-- GerenciadorCatalogo
+PropostaController *-- GerenciadorCatalogo
+PropostaController *-- GerenciadorUsuarios
+PropostaController *-- GerenciadorPropostas
+@enduml

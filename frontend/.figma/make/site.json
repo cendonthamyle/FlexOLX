@@ -1,0 +1,10 @@
+{
+  "description": "Showcase real estate listings with a modern design featuring transparent property cards, essential details, and a proposal submission button for buyers.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
