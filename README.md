@@ -57,17 +57,4 @@ persistindo em arquivos locais (`imoveis.dat`, `usuarios.dat`) via
 diretório carrega os dados salvos em vez de rodar o seed de novo. Para
 resetar, apague os `.dat` antes de subir a aplicação.
 
-## Front-end
 
-Nenhuma mudança é necessária no front-end (`frontend/`) — ele já aponta para
-`http://localhost:8080/api` por padrão (`VITE_API_URL`).
-
-## O que eu NÃO consegui testar aqui
-
-Este pacote foi escrito num ambiente sem acesso ao Maven Central, então não
-foi possível rodar `mvn compile`/`mvn spring-boot:run` para confirmar que
-compila. As classes de `model`/`controller` (copiadas sem alteração) foram
-recompiladas isoladamente com `javac` puro e continuam OK. Os arquivos novos
-(`api/**`) foram revisados manualmente, mas peço que você rode
-`mvn spring-boot:run` localmente e me avise se aparecer algum erro de
-compilação — é rápido de corrigir a partir da mensagem do Maven.
