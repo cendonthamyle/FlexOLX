@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-iron: #3E4E50;
+  --color-peach-light: #FACFAD;
+  --color-caramel: #F8BD7F;
+  --color-sandy: #F5AC72;
+  --color-sandy-warm: #F2AA7E;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: #ffffff;
+  color: #3E4E50;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Frosted glass */
+.glass-card {
+  background: rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(245, 172, 114, 0.28);
+  box-shadow: 0 8px 32px rgba(62, 78, 80, 0.10), 0 1.5px 4px rgba(245, 172, 114, 0.10);
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #F5AC72; border-radius: 3px; }
