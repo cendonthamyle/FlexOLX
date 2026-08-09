@@ -5,27 +5,6 @@ comportamento à versão anterior baseada em `com.sun.net.httpserver`
 (`ApiServer.java` do projeto original, que continua existindo ali como
 referência histórica — não foi tocada).
 
-## O que mudou em relação à versão HttpServer
-
-- **Nenhuma classe de `model` ou `controller.Gerenciador*` foi alterada** —
-  foram copiadas exatamente como estavam.
-- A camada de API foi reescrita usando Spring MVC (`@RestController`) em vez
-  do `com.sun.net.httpserver` manual.
-- Serialização JSON agora é automática via Jackson (a classe `Json.java`,
-  escrita à mão, não existe mais nesta versão — o Spring faz isso sozinho a
-  partir dos `record` em `api/dto/`).
-- Erros de domínio (`AutenticacaoException`, `IllegalArgumentException`,
-  `IllegalStateException`, `SecurityException`) são convertidos em respostas
-  HTTP com corpo `{"erro": "..."}` por um `@RestControllerAdvice`
-  (`GlobalExceptionHandler`), no mesmo formato que a versão antiga produzia.
-- O seed de dados de exemplo virou um `CommandLineRunner`
-  (`DataSeeder`), com as **duas correções já aplicadas**:
-  1. A Kitnet agora é anunciada pelo corretor (não pelo cliente, que não tem
-     perfil autorizado a anunciar).
-  2. Os 3 imóveis semeados têm a avaliação técnica aprovada e são publicados
-     no boot, ficando com status `ATIVO` — sem isso nenhuma proposta
-     conseguia ser criada.
-
 ## Como rodar
 
 Requer **JDK 17+** e **Maven** (ou o wrapper `./mvnw`, se você gerar um com
