@@ -26,7 +26,7 @@ public class GerenciadorPropostas {
         if (p != null) {
             this.listaPropostas.add(p);
             
-            // 👇 SALVA as alterações no arquivo
+            // SALVA as alterações no arquivo
             this.gerenciadorArquivos.salvar(this.listaPropostas);
             
             System.out.println("Proposta enviada e salva no arquivo com sucesso!");
@@ -76,7 +76,7 @@ public class GerenciadorPropostas {
         if (p != null) {
             p.aceitar(anunciante);
             
-            // 👇 SALVA as alterações no arquivo (pois o status da proposta mudou)
+            // SALVA as alterações no arquivo (pois o status da proposta mudou)
             this.gerenciadorArquivos.salvar(this.listaPropostas);
             
             return true;
@@ -90,7 +90,7 @@ public class GerenciadorPropostas {
         if (p != null) {
             p.recusar(anunciante, motivo);
             
-            // 👇 SALVA as alterações no arquivo (pois o status da proposta mudou)
+            // SALVA as alterações no arquivo (pois o status da proposta mudou)
             this.gerenciadorArquivos.salvar(this.listaPropostas);
             
             return true;
