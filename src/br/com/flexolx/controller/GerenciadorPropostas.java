@@ -8,17 +8,28 @@ import br.com.flexolx.model.usuario.Usuario;
 
 public class GerenciadorPropostas {
 
-    private final List<Proposta> listaPropostas;
+    private List<Proposta> listaPropostas;
+    
+    // Instância do gerenciador criado pelo seu parceiro, tipado para <Proposta>
+    private final GerenciadorArquivos<Proposta> gerenciadorArquivos;
 
     public GerenciadorPropostas() {
-        this.listaPropostas = new ArrayList<>();
+        // Inicializa passando o nome do arquivo que vai guardar as propostas
+        this.gerenciadorArquivos = new GerenciadorArquivos<>("propostas.dat");
+        
+        // Ao iniciar, já puxa todos os dados salvos anteriormente no arquivo
+        this.listaPropostas = gerenciadorArquivos.carregar();
     }
 
     // 1. Enviar proposta
     public void enviarProposta(Proposta p) {
         if (p != null) {
             this.listaPropostas.add(p);
-            System.out.println("Proposta enviada com sucesso!");
+            
+            // 👇 SALVA as alterações no arquivo
+            this.gerenciadorArquivos.salvar(this.listaPropostas);
+            
+            System.out.println("Proposta enviada e salva no arquivo com sucesso!");
         }
     }
 
@@ -28,7 +39,6 @@ public class GerenciadorPropostas {
         if (anunciante == null || anunciante.getId() == null) return recebidas;
 
         for (Proposta p : listaPropostas) {
-            // Verifica se o anunciante do imóvel é o usuário passado
             if (p.getImovel().getVendedor().getId().equals(anunciante.getId())) {
                 recebidas.add(p);
             }
@@ -65,6 +75,10 @@ public class GerenciadorPropostas {
         Proposta p = buscarPorId(id);
         if (p != null) {
             p.aceitar(anunciante);
+            
+            // 👇 SALVA as alterações no arquivo (pois o status da proposta mudou)
+            this.gerenciadorArquivos.salvar(this.listaPropostas);
+            
             return true;
         }
         return false;
@@ -75,10 +89,12 @@ public class GerenciadorPropostas {
         Proposta p = buscarPorId(id);
         if (p != null) {
             p.recusar(anunciante, motivo);
+            
+            // 👇 SALVA as alterações no arquivo (pois o status da proposta mudou)
+            this.gerenciadorArquivos.salvar(this.listaPropostas);
+            
             return true;
         }
         return false;
     }
 }
-
-
