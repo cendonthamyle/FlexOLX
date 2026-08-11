@@ -246,7 +246,7 @@ export default function App() {
           <button onClick={() => setPage("home")} className="relative z-10 flex items-center gap-2">
             <span style={{ color: "#F5AC72", fontSize: 22 }}>⌂</span>
             <span className="font-display text-xl font-bold tracking-tight" style={{ color: "#FACFAD" }}>
-              ImovelPrime
+              FlexOlx
             </span>
           </button>
           <div className="relative z-10">
@@ -269,7 +269,7 @@ export default function App() {
           <div className="w-full max-w-sm py-8">
             <button onClick={() => setPage("home")} className="lg:hidden flex items-center gap-2 mb-8">
               <span style={{ color: "#F5AC72", fontSize: 20 }}>⌂</span>
-              <span className="font-display text-lg font-bold" style={{ color: "#3E4E50" }}>ImovelPrime</span>
+              <span className="font-display text-lg font-bold" style={{ color: "#3E4E50" }}>FlexOlx</span>
             </button>
 
             <h1 className="font-display text-3xl font-bold mb-1" style={{ color: "#3E4E50" }}>
@@ -452,7 +452,7 @@ export default function App() {
             >
               <span style={{ color: "#F5AC72", fontSize: 22 }}>⌂</span>
               <span className="font-display text-xl font-bold tracking-tight" style={{ color: "#FACFAD" }}>
-                ImovelPrime
+                FlexOlx
               </span>
             </button>
           </div>
@@ -486,7 +486,7 @@ export default function App() {
               className="lg:hidden flex items-center gap-2 mb-8"
             >
               <span style={{ color: "#F5AC72", fontSize: 20 }}>⌂</span>
-              <span className="font-display text-lg font-bold" style={{ color: "#3E4E50" }}>ImovelPrime</span>
+              <span className="font-display text-lg font-bold" style={{ color: "#3E4E50" }}>FlexOlx</span>
             </button>
 
             <h1 className="font-display text-3xl font-bold mb-1" style={{ color: "#3E4E50" }}>
@@ -685,7 +685,7 @@ export default function App() {
           <div className="flex items-center gap-2">
             <span style={{ color: "#F5AC72", fontSize: 24 }}>⌂</span>
             <span className="font-display text-xl font-bold tracking-tight" style={{ color: "#3E4E50" }}>
-              ImovelPrime
+              FlexOlx
             </span>
           </div>
 
@@ -887,10 +887,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span style={{ color: "#F5AC72", fontSize: 20 }}>⌂</span>
-            <span className="font-display font-bold text-lg" style={{ color: "#FACFAD" }}>ImovelPrime</span>
+            <span className="font-display font-bold text-lg" style={{ color: "#FACFAD" }}>FlexOlx</span>
           </div>
           <p className="text-xs text-center md:text-right" style={{ color: "#8fa8aa" }}>
-            © 2026 ImovelPrime. Todos os direitos reservados. · João Pessoa — PB
+            © 2026 FlexOlx. Todos os direitos reservados. · João Pessoa — PB
           </p>
         </div>
       </footer>
@@ -1034,7 +1034,7 @@ function PropertyDetail({ property: p, onBack }: { property: Property; onBack: (
           </button>
           <div className="flex items-center gap-2">
             <span style={{ color: "#F5AC72", fontSize: 22 }}>⌂</span>
-            <span className="font-display text-lg font-bold tracking-tight" style={{ color: "#3E4E50" }}>ImovelPrime</span>
+            <span className="font-display text-lg font-bold tracking-tight" style={{ color: "#3E4E50" }}>FlexOlx</span>
           </div>
         </div>
       </nav>
