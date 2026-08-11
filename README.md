@@ -46,5 +46,5 @@ O front sobe em modo dev via Vite. Por padrão ele aponta para
 
 Gerado com o plugin **UML Generator for Java**, reorganizado manualmente
 por pacote, e convertido pra SVG com o plugin **PlantUML**.
-
+(É um arquivo vetorizado então pode dar zoon a vontado mesmo dentro do git-hub pra conseguir ver algo)
 <img width="6996" height="4745" alt="flexolx_diagrama" src="https://github.com/user-attachments/assets/83507a2e-3081-44c7-ab4e-f7b9961350bd" />
