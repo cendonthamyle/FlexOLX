@@ -8,7 +8,7 @@ comportamento à versão anterior baseada em `com.sun.net.httpserver`
 
 Requer **JDK 17+** e **Maven** (ou o wrapper `./mvnw`, se você gerar um com
 `mvn -N io.takari:maven:wrapper`). Este pacote não inclui o wrapper porque
-o ambiente onde ele foi escrito não tem acesso ao Maven Central — mas ele
+o ambiente onde ele foi escrito não tem acesso ao Maven Central, mas ele
 roda normalmente na sua máquina com o Maven instalado.
 
 ```bash
