@@ -2,8 +2,7 @@
 
 Versão Spring Boot da API REST do FlexOLX, equivalente em endpoints e
 comportamento à versão anterior baseada em `com.sun.net.httpserver`
-(`ApiServer.java` do projeto original, que continua existindo ali como
-referência histórica — não foi tocada).
+(`ApiServer.java` do projeto original)
 
 ## Como rodar
 
