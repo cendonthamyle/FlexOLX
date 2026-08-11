@@ -10,7 +10,7 @@ public class GerenciadorPropostas {
 
     private List<Proposta> listaPropostas;
     
-    // Instância do gerenciador criado pelo seu parceiro, tipado para <Proposta>
+    // Instância do gerenciador, tipado para <Proposta>
     private final GerenciadorArquivos<Proposta> gerenciadorArquivos;
 
     public GerenciadorPropostas() {
