@@ -1,40 +1,50 @@
-# FlexOLX API (Spring Boot)
+# FlexOLX
 
-Versão Spring Boot da API REST do FlexOLX, equivalente em endpoints e
-comportamento à versão anterior baseada em `com.sun.net.httpserver`
-(`ApiServer.java` do projeto original)
+Sistema de anúncios e negociação de imóveis, focado em ser uma alternativa mais barata pra corretores autônomos, imobiliárias pequenas e construtoras que não competem com o orçamento de marketing das plataformas grandes. O sistema tem uma versão de console pra testes e a versão principal, com API REST em Spring Boot e front-end em React.
 
-## Como rodar
+## Backend (API REST)
 
-Requer **JDK 17+** e **Maven** (ou o wrapper `./mvnw`, se você gerar um com
-`mvn -N io.takari:maven:wrapper`). Este pacote não inclui o wrapper porque
-o ambiente onde ele foi escrito não tem acesso ao Maven Central, mas ele
-roda normalmente na sua máquina com o Maven instalado.
+Requer **JDK 17+** e **Maven**.
 
 ```bash
-cd flexolx-api
 mvn spring-boot:run
 ```
 
-A API sobe em `http://localhost:8080/api`, com os endpoints:
+A API sobe em `http://localhost:8080/api`.
 
-| Método | Rota                     | Corpo / Query                                              |
-|--------|--------------------------|-------------------------------------------------------------|
-| GET    | `/api/imoveis`           | —                                                             |
-| GET    | `/api/imoveis/{id}`      | —                                                             |
-| POST   | `/api/auth/login`        | `{email, senha}`                                              |
-| POST   | `/api/auth/register`     | `{nome, email, senha, telefone, tipo, creci?}`                |
-| GET    | `/api/propostas?email=`  | —                                                             |
-| POST   | `/api/propostas`         | `{imovelId, email, valor, formaPagamento, mensagem}`          |
+| Método | Rota                     | Corpo / Query                                      |
+|--------|--------------------------|-----------------------------------------------------|
+| GET    | `/api/imoveis`           | —                                                     |
+| GET    | `/api/imoveis/{id}`      | —                                                     |
+| POST   | `/api/auth/login`        | `{email, senha}`                                      |
+| POST   | `/api/auth/register`     | `{nome, email, senha, telefone, tipo, creci?}`        |
+| GET    | `/api/propostas?email=`  | —                                                     |
+| POST   | `/api/propostas`         | `{imovelId, email, valor, formaPagamento, mensagem}` |
 
-## Persistência
+### Persistência
 
-`GerenciadorCatalogo` e `GerenciadorUsuarios`
-persistem em arquivos locais (`imoveis.dat`, `usuarios.dat`) via
-`GerenciadorArquivos`. Isso significa que reiniciar a aplicação no mesmo
-diretório carrega os dados salvos em vez de rodar o seed de novo. Para
-resetar, apague os `.dat` antes de subir a aplicação.
+`GerenciadorCatalogo` e `GerenciadorUsuarios` persistem em arquivos locais
+(`imoveis.dat`, `usuarios.dat`) via `GerenciadorArquivos`. Reiniciar a
+aplicação no mesmo diretório carrega os dados salvos em vez de rodar o seed
+de novo. Para resetar, apague os `.dat` antes de subir a aplicação.
+
+## Frontend
+
+Requer **Node.js** e **npm**.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+O front sobe em modo dev via Vite. Por padrão ele aponta para
+`http://localhost:8080/api`; para apontar pra outro endereço, defina
+`VITE_API_URL` antes de rodar.
 
 ## Diagrama de Classes
-Considerando o grau de complexidade, escolhemos usar o plugin **UML Generator for Java** para fazer a base e editamos para colocar cada classe dentro do seu pacode adequado, para gerar o svg em si foi usado o plugin **PlantUML** para a conversão do arquivo .puml
+
+Gerado com o plugin **UML Generator for Java**, reorganizado manualmente
+por pacote, e convertido pra SVG com o plugin **PlantUML**.
+
 <img width="6996" height="4745" alt="flexolx_diagrama" src="https://github.com/user-attachments/assets/83507a2e-3081-44c7-ab4e-f7b9961350bd" />
