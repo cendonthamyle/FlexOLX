@@ -30,8 +30,8 @@ A API sobe em `http://localhost:8080/api`, com os endpoints:
 
 ## Persistência
 
-`GerenciadorCatalogo` e `GerenciadorUsuarios` (não alterados) continuam
-persistindo em arquivos locais (`imoveis.dat`, `usuarios.dat`) via
+`GerenciadorCatalogo` e `GerenciadorUsuarios`
+persistem em arquivos locais (`imoveis.dat`, `usuarios.dat`) via
 `GerenciadorArquivos`. Isso significa que reiniciar a aplicação no mesmo
 diretório carrega os dados salvos em vez de rodar o seed de novo. Para
 resetar, apague os `.dat` antes de subir a aplicação.
