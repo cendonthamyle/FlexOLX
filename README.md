@@ -37,4 +37,4 @@ resetar, apague os `.dat` antes de subir a aplicação.
 
 ## Diagrama de Classes
 Considerando o grau de complexidade, escolhemos usar o plugin **UML Generator for Java** para fazer a base e editamos para colocar cada classe dentro do seu pacode adequado, para gerar o svg em si foi usado o plugin **PlantUML** para a conversão do arquivo .puml
-<img width="6996" height="4725" alt="flexolx_diagrama" src="https://github.com/user-attachments/assets/385f9181-070b-4918-8f02-ca9a8f44ab3a" />
+<img width="6996" height="4745" alt="flexolx_diagrama" src="https://github.com/user-attachments/assets/83507a2e-3081-44c7-ab4e-f7b9961350bd" />
